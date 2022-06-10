@@ -36,10 +36,5 @@ namespace FoodDeliveryAPI.Controllers
             .ToArray();
         }
 
-        [HttpPost]
-        public ActionResult Post()
-        {
-            return Ok();
-        }
     }
 }

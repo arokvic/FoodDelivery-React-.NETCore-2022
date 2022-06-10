@@ -25,41 +25,33 @@ const Register = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    console.log({
-      email: data.get("email"),
-      password: data.get("password"),
-      firstName: data.get("firstName"),
-      role: data.get("role"),
-      file: data.get("picture"),
-    });
-    const resp = await fetch("https://localhost:5001/weatherforecast");
-    const dataa = await resp.json();
 
-    console.log(dataa);
+    try {
+      const resp = await fetch("https://localhost:44347/api/Register", {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: JSON.stringify({
+          // name: "aa",
+          username: data.get("username"),
+          password: data.get("password"),
+          email: data.get("email"),
+          firstName: data.get("fristName"),
+          lastName: data.get("lastName"),
+          address: data.get("address"),
+          userType: data.get("role"),
+          //picture: data.get("picture"),
+        }),
+      });
 
-    // const resp = await httpClient.get("https://localhost:5001/api/Register");
-
-    // console.log(resp.data);
-
-    const respp = await fetch("https://localhost:5001/weatherforecast/", {
-      method: "POST",
-      headers: {
-        Accept: "application/json",
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": "*",
-      },
-      body: JSON.stringify({
-        name: "aa",
-        // username: data.get("username"),
-        // password: data.get("password"),
-        // email: data.get("email"),
-        // firstName: data.get("fristName"),
-        // lastName: data.get("lastName"),
-        // address: data.get("address"),
-        // userType: data.get("role"),
-        // picture: data.get("picture"),
-      }),
-    });
+      const dataa = await resp.json();
+      console.log(dataa.mess);
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
@@ -82,6 +74,7 @@ const Register = () => {
               Sign up
             </Typography>
             <Box
+              enctype="multipart/form-data"
               component="form"
               noValidate
               onSubmit={handleSubmit}
@@ -141,6 +134,17 @@ const Register = () => {
                   />
                 </Grid>
                 <Grid item xs={12}>
+                  <TextField
+                    required
+                    fullWidth
+                    name="confirmPassword"
+                    label="Confirm Password"
+                    type="password"
+                    id="confirmPassword"
+                    autoComplete="new-password"
+                  />
+                </Grid>
+                <Grid item xs={12}>
                   <FormControl fullWidth>
                     <InputLabel id="demo-simple-select-label">Role</InputLabel>
                     <Select
@@ -149,9 +153,9 @@ const Register = () => {
                       label="Age"
                       name="role"
                     >
-                      <MenuItem value={"Admin"}>Admin</MenuItem>
-                      <MenuItem value={"Consumer"}>Consumer</MenuItem>
-                      <MenuItem value={"Deliverer"}>Deliverer</MenuItem>
+                      <MenuItem value="ADMIN">Admin</MenuItem>
+                      <MenuItem value="CONSUMER">Consumer</MenuItem>
+                      <MenuItem value="DELIVERER">Deliverer</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>

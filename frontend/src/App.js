@@ -4,6 +4,8 @@ import React, { useState, useEffect } from "react";
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 import Register from "./components/Register";
+import Login from "./components/Login";
+import Navbar from "./components/Navbar";
 
 function App() {
   const [test, setTest] = useState([]);
@@ -21,8 +23,12 @@ function App() {
   return (
     <Router>
       <div>
+        <Navbar></Navbar>
         <Routes>
           <Route path="/register" element={<Register />} />
+        </Routes>
+        <Routes>
+          <Route path="/login" element={<Login />} />
         </Routes>
       </div>
     </Router>

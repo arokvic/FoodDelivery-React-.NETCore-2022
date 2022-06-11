@@ -21,6 +21,28 @@ namespace FoodDeliveryAPI.Controllers
             _context = context;
         }
 
+
+
+        [HttpPost]
+        [Route("Register")]
+        //[Consumes("application/json")]
+        //[Produces("application/json")]
+        public async Task<ActionResult> RegisterUser([FromBody] User user)
+        {
+            if (UserExists(user.Username))
+            {
+                
+                return BadRequest(new { mess = "vec postoji" });
+            }
+
+
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+
+            return Ok(new { mess = "napravljen" });
+         
+        }
+
         // GET: api/User
         [HttpGet]
         public async Task<ActionResult<IEnumerable<User>>> GetUsers()

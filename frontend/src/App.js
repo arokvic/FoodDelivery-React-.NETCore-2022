@@ -1,11 +1,12 @@
-import "./App.css";
+import './App.css';
 
-import React, { useState, useEffect } from "react";
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
-import Register from "./components/Register";
-import Login from "./components/Login";
-import Navbar from "./components/Navbar";
+import Register from './components/Register';
+import Login from './components/Login';
+import Navbar from './components/Navbar';
+import CardItem from './components/CardItem';
 
 function App() {
   const [test, setTest] = useState([]);
@@ -29,6 +30,9 @@ function App() {
         </Routes>
         <Routes>
           <Route path="/login" element={<Login />} />
+        </Routes>
+        <Routes>
+          <Route path="/dashboard" element={<CardItem />} />
         </Routes>
       </div>
     </Router>

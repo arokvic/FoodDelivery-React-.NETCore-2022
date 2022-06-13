@@ -5,7 +5,12 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using FoodDeliveryAPI.DTOs;
+using FoodDeliveryAPI.Helpers;
 using FoodDeliveryAPI.Models;
+using FoodDeliveryAPI.Repository;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,29 +21,38 @@ namespace FoodDeliveryAPI.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private readonly DeliveryContext _context;
+        private readonly IUserRepository _userRepository;
+        private readonly JwtService _jwtService;
+        private readonly IMapper _mapper;
+        private readonly ICartRepository _cartRepository;
 
-        public AuthController(DeliveryContext context)
+        public AuthController(IUserRepository userRepository, JwtService jwtService, IMapper mapper, ICartRepository cartRepository)
         {
-            _context = context;
+            _userRepository = userRepository;
+            _jwtService = jwtService;
+            _mapper = mapper;
+            _cartRepository = cartRepository;
         }
 
 
         [HttpPost]
         [Route("Register")]
-        //[Consumes("application/json")]
+        [Consumes("application/json")]
         //[Produces("application/json")]
-        public async Task<ActionResult> RegisterUser([FromBody] User user)
+        public IActionResult RegisterUser([FromBody] RegisterDto dtoUser)
         {
-            if (UserExists(user.Username))
+            if (_userRepository.UserExists(dtoUser.Username))
             {
 
                 return BadRequest(new { mess = "vec postoji" });
             }
 
-            user.Verified = "PENDING";
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+            Cart cart = new Cart();
+            User newUser = _mapper.Map<User>(dtoUser);
+
+            newUser.Verified = "PENDING";
+            newUser.UserCart = cart;
+             _userRepository.AddUser(newUser);
 
             return Ok(new { mess = "napravljen" });
 
@@ -46,44 +60,62 @@ namespace FoodDeliveryAPI.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public IActionResult Login([FromBody] UserLogin userLogin)
+       
+        public IActionResult Login([FromBody] LoginDto userLogin)
         {
-            User userTemp = _context.Users.Where(b => b.Username == userLogin.Username && b.Password == userLogin.Password).FirstOrDefault();
+            
+
+            User userTemp = _userRepository.GetByUsername(userLogin.Username);
             if(userTemp == null)
             {
                 return NotFound("User not found");
             }
 
-            var token = GenerateToken(userTemp);
+            if(userTemp.Password != userLogin.Password)
+            {
+                return NotFound("Wrong password");
+            }
+
+            var token = _jwtService.GenerateToken(userTemp);
+
+            Response.Cookies.Append("jwt", token, new CookieOptions
+            {
+                HttpOnly = true
+            });
+
             return Ok(token);
         }
 
-
-        private bool UserExists(string id)
+        [HttpGet("GetUserProfile")]
+        [Authorize(Roles = "Consumer")]
+        public IActionResult GetUserProfile()
         {
-            return _context.Users.Any(e => e.Username == id);
+            
+            var identity = HttpContext.User.Identity as ClaimsIdentity;
+            var userClaims = identity.Claims;
+            string username = userClaims.FirstOrDefault(o => o.Type == ClaimTypes.NameIdentifier)?.Value;
+
+            User user = _userRepository.GetByUsername(username);
+
+            return Ok(_mapper.Map<UserProfileDto>(user));
         }
 
-        private string GenerateToken(User user)
+        [HttpPut("UpdateUserProfile")]
+        public IActionResult UpdateUserProfile([FromBody] UserProfileDto userProfileDto)
         {
-            var secretKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("secretKeysdfsdfsdf"));
-            var signingCredentials = new SigningCredentials(secretKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new List<Claim>
-                    {
-                        new Claim(ClaimTypes.Role, user.Role),
-                        new Claim(ClaimTypes.Name, user.Username)
-                    };
-
-            var token = new JwtSecurityToken(
-                issuer: "https://localhost:5001",
-                audience: "https://localhost:5001",
-                claims: claims,
-                expires: DateTime.Now.AddMinutes(60),
-                signingCredentials: signingCredentials
-                );
-
-            return new JwtSecurityTokenHandler().WriteToken(token);
+            User user = _mapper.Map<User>(userProfileDto);
+            _userRepository.UpdateUser(user);
+    
+            return Ok("updated");
         }
+
+
+
+
+
+
+
+
     }
 }

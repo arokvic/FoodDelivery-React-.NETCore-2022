@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace FoodDeliveryAPI.Models
 {
+    public enum OrderState
+    {
+        PENDING,
+        IN_PROGRESS,
+        FINISHED,
+        IN_MAKING
+    }
+
+
     public class Order
     {
 
@@ -11,7 +20,7 @@ namespace FoodDeliveryAPI.Models
         public string OrderAddress { get; set; }
         public string Comment { get; set; }
         public double TotalPrice { get; set; }
-        public bool Pending { get; set; }
+        public string Pending { get; set; }
         public int DeliveryTime { get; set; }
 
 

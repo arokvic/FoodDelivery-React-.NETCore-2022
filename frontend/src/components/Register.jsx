@@ -27,7 +27,7 @@ const Register = () => {
     const data = new FormData(event.currentTarget);
 
     try {
-      const resp = await fetch("https://localhost:44347/api/Register", {
+      const resp = await fetch("https://localhost:5001/api/Auth/Register", {
         method: "POST",
         headers: {
           Accept: "application/json",

@@ -13,6 +13,13 @@ namespace FoodDeliveryAPI.Models
         PENDING
     }
 
+    public enum UserType
+    {
+        ADMIN,
+        CONSUMER,
+        DELIVERER
+    };
+
     public class User
     {
 
@@ -27,6 +34,7 @@ namespace FoodDeliveryAPI.Models
         public string Role { get; set; }
         public byte[] Picture { get; set; }
         public List<Order> Orders { get; set; }
+        public Cart UserCart { get; set; }
         public string Verified { get; set; }
 
         public User()

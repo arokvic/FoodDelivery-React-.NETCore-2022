@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FoodDeliveryAPI;
 using FoodDeliveryAPI.Models;
+using FoodDeliveryAPI.Repository;
 
 namespace FoodDeliveryAPI.Controllers
 {
@@ -16,9 +17,12 @@ namespace FoodDeliveryAPI.Controllers
     {
         private readonly DeliveryContext _context;
 
+        
+
         public UserController(DeliveryContext context)
         {
             _context = context;
+           
         }
 
 
@@ -35,7 +39,7 @@ namespace FoodDeliveryAPI.Controllers
                 return BadRequest(new { mess = "vec postoji" });
             }
 
-
+           
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 

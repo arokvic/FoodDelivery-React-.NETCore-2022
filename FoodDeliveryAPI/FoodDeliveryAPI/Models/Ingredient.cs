@@ -5,7 +5,7 @@ namespace FoodDeliveryAPI.Models
     {
 
         public int Id { get; set; }
-        public int IngredientName { get; set; }
+        public string IngredientName { get; set; }
 
         public Ingredient()
         {

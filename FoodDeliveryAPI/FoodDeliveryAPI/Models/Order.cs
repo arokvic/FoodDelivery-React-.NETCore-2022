@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace FoodDeliveryAPI.Models
 {
@@ -16,14 +17,15 @@ namespace FoodDeliveryAPI.Models
     {
 
         public int Id { get; set; }
-        public List<OrderItem> products { get; set; }
+        private List<OrderItem> products;
         public string OrderAddress { get; set; }
         public string Comment { get; set; }
         public double TotalPrice { get; set; }
-        public string Pending { get; set; }
+        public string OrderState { get; set; }
         public int DeliveryTime { get; set; }
+        public ILazyLoader LazyLoader { get; set; }
 
-
+        public List<OrderItem> Products { get => LazyLoader.Load(this, ref products); set => products = value; }
 
 
         public Order()

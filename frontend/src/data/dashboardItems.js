@@ -4,7 +4,7 @@ const dashboardItems = [
     url: '/icon-individual.png',
     title: 'Edit profile',
     width: '33%',
-    redirectUrl: '/register',
+    redirectUrl: '/update',
   },
   {
     id: 2,

@@ -50,7 +50,15 @@ namespace FoodDeliveryAPI.Controllers
             Cart cart = new Cart();
             User newUser = _mapper.Map<User>(dtoUser);
 
-            newUser.Verified = "PENDING";
+            if(newUser.Role == "DELIVERER")
+            {
+                newUser.Verified = "PENDING";
+            }
+            else
+            {
+                newUser.Verified = "CONFIRMED";
+            }
+           
             newUser.UserCart = cart;
              _userRepository.AddUser(newUser);
 
@@ -87,7 +95,7 @@ namespace FoodDeliveryAPI.Controllers
         }
 
         [HttpGet("GetUserProfile")]
-        [Authorize(Roles = "Consumer")]
+        //[Authorize(Roles = "DELIVERER")]
         public IActionResult GetUserProfile()
         {
             

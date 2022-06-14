@@ -14,6 +14,8 @@ namespace FoodDeliveryAPI.Repository
 
 		public List<Product> GetProducts();
 
+		Product GetById(string id);
+
 	}
 }
 

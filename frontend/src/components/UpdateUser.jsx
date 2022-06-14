@@ -11,49 +11,101 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import Add from '@mui/icons-material/Add';
-import { useNavigate } from 'react-router-dom';
+
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { InputLabel, MenuItem, FormControl, Select } from '@mui/material';
-import { useState } from 'react';
-import { ConnectingAirportsOutlined } from '@mui/icons-material';
-
+import { useState, useEffect } from 'react';
+import { ConnectingAirportsOutlined, ContactMail } from '@mui/icons-material';
+import { useGlobalContext } from '../context/AuthProvider';
 import httpClient from '../httpClient';
 
 const theme = createTheme();
 
-const Register = () => {
-  const navigate = useNavigate();
+const UpdateUser = () => {
+  const [user, setUser] = useState({});
+  const [loading, setLoading] = useState(false);
+  const { setAuth, setLoggedIn, auth, loggedIn } = useGlobalContext();
+
+  const getUser = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(
+        `https://localhost:${process.env.REACT_APP_PORT}/api/Auth/GetUserProfile`,
+        {
+          method: 'GET',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'Access-Control-Allow-Origin': '*',
+            Authorization: 'Bearer ' + auth.token,
+          },
+        }
+      );
+
+      const string = await response.text();
+      const json = string === '' ? {} : JSON.parse(string);
+      console.log(json);
+      //  setName(json.name);
+      // console.log(name);
+      setUser((user) => ({
+        ...user,
+        firstname: json.firstname,
+        lastname: json.lastname,
+        email: json.email,
+        address: json.address,
+        username: json.username,
+      }));
+      console.log(user);
+
+      //  return json;
+
+      /*    console.log('uso');
+      const data = await response.json();
+
+      console.log(data);
+   //   console.log('uso2');
+      const { info } = data;
+      if (info) {
+        console.log(info);
+      } else {
+        console.log('nista');
+      }
+      setLoading(false);*/
+    } catch (error) {
+      console.log(error);
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    getUser();
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
 
     try {
       const resp = await fetch(
-        `https://localhost:${process.env.REACT_APP_PORT}/api/Auth/Register`,
+        `https://localhost:${process.env.REACT_APP_PORT}/api/Auth/UpdateUserProfile`,
         {
-          method: 'POST',
+          method: 'PUT',
           headers: {
             Accept: 'application/json',
             'Content-Type': 'application/json',
             'Access-Control-Allow-Origin': '*',
           },
           body: JSON.stringify({
-            // name: "aa",
-            username: data.get('username'),
-            password: data.get('password'),
-            email: data.get('email'),
-            firstName: data.get('fristName'),
-            lastName: data.get('lastName'),
-            address: data.get('address'),
-            role: data.get('role'),
-            //picture: data.get("picture"),
+            firstname: user.firstname,
+            lastname: user.lastname,
+            email: user.email,
+            address: user.address,
+            username: user.username,
           }),
         }
       );
 
       const dataa = await resp.json();
-      console.log(dataa);
-      navigate('../login');
+      console.log(dataa.mess);
     } catch (err) {
       console.log(err);
     }
@@ -72,11 +124,9 @@ const Register = () => {
               alignItems: 'center',
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
-              <AccountCircle />
-            </Avatar>
+            <Avatar alt="Remy Sharp" src="/3.png" />
             <Typography component="h1" variant="h5">
-              Sign up
+              My profile
             </Typography>
             <Box
               enctype="multipart/form-data"
@@ -93,8 +143,16 @@ const Register = () => {
                     required
                     fullWidth
                     id="firstName"
+                    InputLabelProps={{ shrink: true }}
                     label="First Name"
                     autoFocus
+                    value={user.firstname}
+                    onChange={(e) =>
+                      setUser((user) => ({
+                        ...user,
+                        firstname: e.target.value,
+                      }))
+                    }
                   />
                 </Grid>
 
@@ -106,6 +164,14 @@ const Register = () => {
                     label="Last Name"
                     name="lastName"
                     autoComplete="family-name"
+                    InputLabelProps={{ shrink: true }}
+                    value={user.lastname}
+                    onChange={(e) =>
+                      setUser((user) => ({
+                        ...user,
+                        lastname: e.target.value,
+                      }))
+                    }
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -114,7 +180,15 @@ const Register = () => {
                     fullWidth
                     id="username"
                     label="Username"
+                    InputLabelProps={{ shrink: true }}
                     name="username"
+                    value={user.username}
+                    onChange={(e) =>
+                      setUser((user) => ({
+                        ...user,
+                        username: e.target.value,
+                      }))
+                    }
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -122,9 +196,17 @@ const Register = () => {
                     required
                     fullWidth
                     id="email"
+                    InputLabelProps={{ shrink: true }}
                     label="Email Address"
                     name="email"
                     autoComplete="email"
+                    value={user.email}
+                    onChange={(e) =>
+                      setUser((user) => ({
+                        ...user,
+                        email: e.target.value,
+                      }))
+                    }
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -132,10 +214,18 @@ const Register = () => {
                     required
                     fullWidth
                     name="password"
+                    InputLabelProps={{ shrink: true }}
                     label="Password"
                     type="password"
                     id="password"
                     autoComplete="new-password"
+                    value={user.password}
+                    onChange={(e) =>
+                      setUser((user) => ({
+                        ...user,
+                        password: e.target.value,
+                      }))
+                    }
                   />
                 </Grid>
                 <Grid item xs={12}>
@@ -143,34 +233,35 @@ const Register = () => {
                     required
                     fullWidth
                     name="confirmPassword"
+                    InputLabelProps={{ shrink: true }}
                     label="Confirm Password"
                     type="password"
                     id="confirmPassword"
                     autoComplete="new-password"
+                    value={user.password}
+                    onChange={(e) =>
+                      setUser((user) => ({
+                        ...user,
+                        password: e.target.value,
+                      }))
+                    }
                   />
-                </Grid>
-                <Grid item xs={12}>
-                  <FormControl fullWidth>
-                    <InputLabel id="demo-simple-select-label">Role</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="role"
-                      label="Age"
-                      name="role"
-                    >
-                      <MenuItem value="ADMIN">Admin</MenuItem>
-                      <MenuItem value="CONSUMER">Consumer</MenuItem>
-                      <MenuItem value="DELIVERER">Deliverer</MenuItem>
-                    </Select>
-                  </FormControl>
                 </Grid>
                 <Grid item xs={12}>
                   <TextField
                     required
                     fullWidth
-                    id="address"
                     label="Address"
+                    id="address"
                     name="address"
+                    InputLabelProps={{ shrink: true }}
+                    value={user.address}
+                    onChange={(e) =>
+                      setUser((user) => ({
+                        ...user,
+                        address: e.target.value,
+                      }))
+                    }
                   />
                 </Grid>
               </Grid>
@@ -190,16 +281,10 @@ const Register = () => {
                 fullWidth
                 variant="contained"
                 sx={{ mt: 1, mb: 1 }}
+                onClick={() => handleSubmit()}
               >
-                Sign Up
+                Update User
               </Button>
-              <Grid container justifyContent="flex-end">
-                <Grid item>
-                  <Link href="/login" variant="body2">
-                    Already have an account? Sign in
-                  </Link>
-                </Grid>
-              </Grid>
             </Box>
           </Box>
         </Container>
@@ -208,4 +293,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default UpdateUser;

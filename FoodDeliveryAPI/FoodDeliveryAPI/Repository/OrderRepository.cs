@@ -12,14 +12,12 @@ namespace FoodDeliveryAPI.Repository
             _context = context;
         }
 
-        public void Add(Order order)
-        {
-            throw new NotImplementedException();
-        }
+      
 
         public void MakeOrder(Order order)
         {
             _context.Orders.Add(order);
+            _context.SaveChanges();
         }
 
         

@@ -22,5 +22,7 @@ namespace FoodDeliveryAPI.Repository
         void VerifyUser(string username, string state);
 
         bool UserExists(string username);
+
+        
     }
 }

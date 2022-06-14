@@ -7,6 +7,7 @@ import Register from './components/Register';
 import Login from './components/Login';
 import Navbar from './components/Navbar';
 import CardItem from './components/CardItem';
+import UpdateUser from './components/UpdateUser';
 
 function App() {
   const [test, setTest] = useState([]);
@@ -33,6 +34,9 @@ function App() {
         </Routes>
         <Routes>
           <Route path="/dashboard" element={<CardItem />} />
+        </Routes>
+        <Routes>
+          <Route path="/update" element={<UpdateUser />} />
         </Routes>
       </div>
     </Router>

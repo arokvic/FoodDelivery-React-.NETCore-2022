@@ -35,6 +35,11 @@ namespace FoodDeliveryAPI.Repository
             _context.SaveChanges();
         }
 
+        public Product GetById(string id)
+        {
+            return _context.Products.Where(i => i.Id.ToString() == id).FirstOrDefault();
+        }
+
         public List<Product> GetProducts()
         {
             return _context.Products.ToList();

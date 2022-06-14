@@ -1,11 +1,17 @@
 ﻿using System;
+using System.Collections.Generic;
 using FoodDeliveryAPI.Models;
 
 namespace FoodDeliveryAPI.Repository
 {
 	public interface IOrderRepository
 	{
-		void Add(Order order);
+
+
+		void MakeOrder(Order order);
+
+		List<Order> GetPendingOrders();
+
 	}
 }
 

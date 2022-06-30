@@ -25,11 +25,14 @@ namespace FoodDeliveryAPI.Controllers
        
         private readonly IProductRepository _productRepository;
 
-        public AdminController(IUserRepository userRepository, IProductRepository productRepository, IMapper mapper)
+        private readonly IOrderRepository _orderRepository;
+
+        public AdminController(IUserRepository userRepository, IProductRepository productRepository, IMapper mapper, IOrderRepository orderRepository)
         {
             _userRepository = userRepository;
             _mapper = mapper;          
             _productRepository = productRepository;
+            _orderRepository = orderRepository;
         }
 
         [HttpPost("VerifyUser")]
@@ -75,15 +78,11 @@ namespace FoodDeliveryAPI.Controllers
         }
 
 
-        [HttpPost("UpdateProduct")]
-        public IActionResult UpdateProduct([FromBody] Product product)
-        {
-            //Product product = _mapper.Map<Product>(productDto);
-
-            _productRepository.EditProduct(product);
-
-            return Ok("Edited product");
-        }
+       [HttpGet("GetAllOrders")]
+       public IActionResult GetAllOrders()
+       {
+            return Ok(_orderRepository.GetFinishedAndInProgress());
+       }
 
 
 

@@ -1,62 +1,95 @@
-import * as React from 'react';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import CssBaseline from '@mui/material/CssBaseline';
-import TextField from '@mui/material/TextField';
+import * as React from "react";
+import Avatar from "@mui/material/Avatar";
+import Button from "@mui/material/Button";
+import CssBaseline from "@mui/material/CssBaseline";
+import TextField from "@mui/material/TextField";
 
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
-import Add from '@mui/icons-material/Add';
-import { useNavigate } from 'react-router-dom';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
-import { InputLabel, MenuItem, FormControl, Select } from '@mui/material';
-import { useState } from 'react';
-import { ConnectingAirportsOutlined } from '@mui/icons-material';
+import Link from "@mui/material/Link";
+import Grid from "@mui/material/Grid";
+import Box from "@mui/material/Box";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import Typography from "@mui/material/Typography";
+import Container from "@mui/material/Container";
+import Add from "@mui/icons-material/Add";
+import { useNavigate } from "react-router-dom";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+import {
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  avatarGroupClasses,
+} from "@mui/material";
+import { useState } from "react";
+import { ConnectingAirportsOutlined } from "@mui/icons-material";
 
-import httpClient from '../httpClient';
+import httpClient from "../httpClient";
 
 const theme = createTheme();
 
 const Register = () => {
+  const [file, setFile] = useState(null);
+  const [imgUrl, setImgUrl] = useState("");
+
+  const fileSelectedHandler = (event) => {
+    setFile(event.target.files[0]);
+  };
+
   const navigate = useNavigate();
+
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
+    const imgData = new FormData();
+    imgData.append("UserImage", file);
+    imgData.append("Username", data.get("username"));
+
+    // const data = await response.blob();
+    // const imgUrlTemp = URL.createObjectURL(data);
+    // setImgUrl(imgUrlTemp);
 
     try {
       const resp = await fetch(
         `https://localhost:${process.env.REACT_APP_PORT}/api/Auth/Register`,
         {
-          method: 'POST',
+          method: "POST",
           headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'Access-Control-Allow-Origin': '*',
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            "Access-Control-Allow-Origin": "*",
           },
           body: JSON.stringify({
-            // name: "aa",
-            username: data.get('username'),
-            password: data.get('password'),
-            email: data.get('email'),
-            firstName: data.get('fristName'),
-            lastName: data.get('lastName'),
-            address: data.get('address'),
-            role: data.get('role'),
-            //picture: data.get("picture"),
+            username: data.get("username"),
+            password: data.get("password"),
+            email: data.get("email"),
+            firstName: data.get("fristName"),
+            lastName: data.get("lastName"),
+            address: data.get("address"),
+            role: data.get("role"),
+            //ProfileImage: data.get("picture"),
           }),
         }
       );
 
-      const dataa = await resp.json();
-      console.log(dataa);
-      navigate('../login');
+      //const dataa = await resp.json();
     } catch (err) {
       console.log(err);
     }
+
+    const resp = await fetch(
+      `https://localhost:${process.env.REACT_APP_PORT}/api/Auth/UploadImage`,
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          //"Content-Type": "application/json",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: imgData,
+      }
+    );
+
+    navigate("../login");
   };
 
   return (
@@ -67,12 +100,12 @@ const Register = () => {
           <Box
             sx={{
               marginTop: 5,
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
             }}
           >
-            <Avatar sx={{ m: 1, bgcolor: 'secondary.main' }}>
+            <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
               <AccountCircle />
             </Avatar>
             <Typography component="h1" variant="h5">
@@ -181,9 +214,14 @@ const Register = () => {
                 color="primary"
                 sx={{ mt: 1, mb: 1 }}
               >
-                {' '}
+                {" "}
                 <Add /> Upload a picture
-                <input type="file" name="picture" hidden />
+                <input
+                  type="file"
+                  name="picture"
+                  hidden
+                  onChange={fileSelectedHandler}
+                />
               </Button>
               <Button
                 type="submit"

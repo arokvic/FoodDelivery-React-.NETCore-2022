@@ -11,8 +11,6 @@ namespace FoodDeliveryAPI.Profiles
 		{
 			CreateMap<PlaceOrderDto, Order>().ReverseMap();
 
-			CreateMap<CartItem, SaveOrderItemDto>().ReverseMap();
-
 			CreateMap<SaveOrderItemDto, OrderItem>().ReverseMap();
 		}
 	}
